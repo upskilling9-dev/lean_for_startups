@@ -1,19 +1,42 @@
-import { createContext, useContext, useMemo, useState } from 'react'
+import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { onAuthStateChanged } from 'firebase/auth'
+import { auth } from '../firebase/config.js'
+import {
+  mapFirebaseUser,
+  signInWithEmail,
+  signOutUser,
+  signUpWithEmail,
+} from '../services/authService.js'
 
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
 
-  const login = (email) => {
-    setUser({ email, name: email.split('@')[0] })
-  }
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(mapFirebaseUser(firebaseUser))
+      setLoading(false)
+    })
 
-  const logout = () => setUser(null)
+    return unsubscribe
+  }, [])
+
+  const login = (email, password) => signInWithEmail(email, password)
+  const signup = (email, password) => signUpWithEmail(email, password)
+  const logout = () => signOutUser()
 
   const value = useMemo(
-    () => ({ user, isAuthenticated: Boolean(user), login, logout }),
-    [user],
+    () => ({
+      user,
+      loading,
+      isAuthenticated: Boolean(user),
+      login,
+      signup,
+      logout,
+    }),
+    [user, loading],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
