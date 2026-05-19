@@ -9,7 +9,16 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173). Use any email on the login page (demo auth, no backend).
+Open [http://localhost:5173](http://localhost:5173).
+
+### Firebase Authentication
+
+1. Create a Firebase project and enable **Email/Password** in Authentication → Sign-in method.
+2. Register a web app and copy the config values.
+3. Copy `.env.example` to `.env` and fill in `VITE_FIREBASE_*` variables.
+4. Run `npm install` and `npm run dev`.
+
+Routes: `/login`, `/signup`, and protected app routes under `/dashboard`, etc.
 
 ## Routes
 
